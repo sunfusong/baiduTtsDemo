@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void isFirstRun() {
         SharedPreferences sp = getSharedPreferences("ttsFlag", MODE_PRIVATE);
         boolean firstFlag = sp.getBoolean("firstFlag", true);
-        SharedPreferences.Editor edit = sp.edit();
+        final SharedPreferences.Editor edit = sp.edit();
         Log.i("msg", "isFirstRun  firstFlag: " + firstFlag);
         if (firstFlag) {//第一次启动app,判断是否联网
             final int netFlag = NetUtil.getNetWorkState(MainActivity.this);
@@ -82,9 +82,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 initialEnv();
                 initTts();
                 initView();
-            } else {//没有网络
-                Toast.makeText(this, "没有网络或者检查网络是否可用", Toast.LENGTH_LONG).show();
-                MainActivity.this.finish();
+            } else {//没有网络，
+                Toast.makeText(this, "使用离线合成功能，首次联网！", Toast.LENGTH_SHORT).show();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        int netFlag1 = NetUtil.getNetWorkState(MainActivity.this);
+                        while (netFlag1 == 1) {
+                            netFlag1 = NetUtil.getNetWorkState(MainActivity.this);
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                edit.putBoolean("firstFlag", false);
+                                edit.apply();
+                                initialEnv();
+                                initTts();
+                                initView();
+
+                            }
+                        });
+                    }
+                }.start();
+
             }
         } else {//非第一次启动app
             initialEnv();
