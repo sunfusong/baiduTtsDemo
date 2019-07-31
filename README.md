@@ -6,3 +6,5 @@
 使用前将apiId,apiKey,secretKey修改自己的.最好先看下技术文档!
 百度语音合成文档:https://ai.baidu.com/docs#/TTS-Android-SDK/top
 百度sdk下载:https://ai.baidu.com/sdk#tts
+
+备注：百度TTS的离在线SDK有QPS的限制，对商用不是很友好，如果想免费纯离线的可以看下我的另一个项目https://github.com/sunfusong/NativeTTS
